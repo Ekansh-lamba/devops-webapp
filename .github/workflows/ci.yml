@@ -8,10 +8,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout Code
+      uses: actions/checkout@v3
 
-    - name: Run a one-line script
-      run: echo "Starting the build process..."
+    - name: Run Build
+      run: echo "Building the webapp..."
 
-    - name: Simulate Testing
-      run: echo "Running tests... All tests passed!"git 
+    - name: Run Tests
+      run: echo "Testing... All tests passed!"
+
+    # This is the new ChatOps part!
+    - name: Send Slack Notification
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # This pulls the secret you made
+      if: always() # This ensures you get a message even if the build fails
